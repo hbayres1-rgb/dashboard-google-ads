@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Google Ads</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --border: rgba(0,0,0,0.08);
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --hint: #9ca3af;
+      --blue: #185FA5;
+      --blue-light: #E6F1FB;
+      --green: #0F6E56;
+      --green-light: #E1F5EE;
+      --amber: #854F0B;
+      --amber-light: #FAEEDA;
+      --red: #993C1D;
+      --red-light: #FAECE7;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 40px; height: 40px;
+      background: var(--blue);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
+    .header-title { font-size: 17px; font-weight: 600; }
+    .header-sub { font-size: 13px; color: var(--muted); margin-top: 1px; }
+    .badge-live {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--green-light); color: var(--green);
+      font-size: 12px; font-weight: 500;
+      padding: 5px 12px; border-radius: 99px;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .last-update { font-size: 11px; color: var(--hint); }
+
+    /* ── Layout ── */
+    main { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
+
+    /* ── Section ── */
+    .section-label {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      letter-spacing: .06em; text-transform: uppercase;
+      margin-bottom: 12px; margin-top: 28px;
+    }
+
+    /* ── Input grid ── */
+    .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .input-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .input-card label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .input-card input {
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      border: none;
+      background: transparent;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .input-card input::-webkit-outer-spin-button,
+    .input-card input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .input-card.cost input { font-size: 20px; }
+    .input-card .prefix { font-size: 14px; color: var(--muted); display: block; margin-bottom: 2px; }
+
+    .save-bar {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      margin-top: 16px;
+    }
+    .save-status { font-size: 13px; color: var(--muted); }
+    .save-status.ok { color: var(--green); }
+    .save-status.saving { color: var(--amber); }
+    .btn-save {
+      background: var(--blue); color: #fff;
+      border: none; border-radius: var(--radius-sm);
+      padding: 10px 24px; font-size: 14px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: background .15s;
+    }
+    .btn-save:hover { background: #0C447C; }
+    .btn-save:active { transform: scale(.98); }
+
+    /* ── KPI cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+    .kpi {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px;
+    }
+    .kpi-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
+    .kpi-value { font-size: 22px; font-weight: 600; color: var(--text); }
+    .kpi-value.blue { color: var(--blue); }
+    .kpi-value.green { color: var(--green); }
+    .kpi-value.amber { color: var(--amber); }
+    .kpi-sub { font-size: 11px; color: var(--hint); margin-top: 3px; }
+
+    /* ── Funil ── */
+    .funnel-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+    }
+    .funnel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .funnel-name { font-size: 12px; color: var(--muted); min-width: 80px; text-align: right; }
+    .funnel-track {
+      flex: 1; height: 32px; background: var(--bg);
+      border-radius: var(--radius-sm); overflow: hidden;
+    }
+    .funnel-fill {
+      height: 100%; border-radius: var(--radius-sm);
+      display: flex; align-items: center; padding-left: 10px;
+      font-size: 13px; font-weight: 600;
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+      min-width: 10px;
+    }
+    .funnel-pct { font-size: 11px; color: var(--hint); min-width: 50px; }
+    .funnel-arrow {
+      display: flex; align-items: center; gap: 4px;
+      padding-left: calc(80px + 12px);
+      font-size: 11px; color: var(--hint); margin-bottom: 8px;
+    }
+
+    /* ── ROI grid ── */
+    .roi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .roi-card {
+      border-radius: var(--radius); padding: 16px;
+      border: 1px solid transparent;
+    }
+    .roi-card.green { background: var(--green-light); border-color: rgba(15,110,86,.15); }
+    .roi-card.amber { background: var(--amber-light); border-color: rgba(133,79,11,.15); }
+    .roi-card.red   { background: var(--red-light);   border-color: rgba(153,60,29,.15); }
+    .roi-card.gray  { background: var(--surface); border-color: var(--border); }
+    .roi-card-label { font-size: 12px; margin-bottom: 5px; }
+    .roi-card.green .roi-card-label { color: var(--green); }
+    .roi-card.amber .roi-card-label { color: var(--amber); }
+    .roi-card.red   .roi-card-label { color: var(--red); }
+    .roi-card.gray  .roi-card-label { color: var(--muted); }
+    .roi-card-value { font-size: 22px; font-weight: 600; }
+    .roi-card.green .roi-card-value { color: #085041; }
+    .roi-card.amber .roi-card-value { color: #633806; }
+    .roi-card.red   .roi-card-value { color: var(--red); }
+    .roi-card.gray  .roi-card-value { color: var(--text); }
+
+    footer {
+      text-align: center; padding: 24px;
+      font-size: 12px; color: var(--hint);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <div>
+      <div class="header-title">Google Ads — Campanha</div>
+      <div class="header-sub" id="month-label">Lançamento Imobiliário</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <span class="last-update" id="last-update">Carregando…</span>
+    <div class="badge-live"><div class="dot"></div> Tempo real</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- INPUTS -->
+  <div class="section-label">Preencha os dados da campanha</div>
+  <div class="input-grid">
+    <div class="input-card">
+      <label>Leads Google</label>
+      <input id="inp-leads" type="number" min="0" placeholder="0" oninput="calc()" />
+    </div>
+    <div class="input-card">
+      <label>Visitas agendadas</label>
+      <input id="inp-visitas" type="number" min="0" placeholder="0" oninput="calc()" />
+    </div>
+    <div class="input-card">
+      <label>Propostas avançadas</label>
+      <input id="inp-propostas" type="number" min="0" placeholder="0" oninput="calc()" />
+    </div>
+    <div class="input-card">
+      <label>Vendas fechadas</label>
+      <input id="inp-vendas" type="number" min="0" placeholder="0" oninput="calc()" />
+    </div>
+    <div class="input-card cost">
+      <label>Investimento Google Ads</label>
+      <span class="prefix">R$</span>
+      <input id="inp-custo" type="number" min="0" placeholder="0,00" oninput="calc()" />
+    </div>
+    <div class="input-card cost">
+      <label>Ticket médio (R$)</label>
+      <span class="prefix">R$</span>
+      <input id="inp-ticket" type="number" min="0" placeholder="0,00" oninput="calc()" />
+    </div>
+  </div>
+
+  <div class="save-bar">
+    <span class="save-status" id="save-status">Preencha os dados acima e salve.</span>
+    <button class="btn-save" onclick="salvar()">Salvar dados</button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="section-label">Indicadores de performance</div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Conv. lead → visita</div>
+      <div class="kpi-value blue" id="kpi-cv">0%</div>
+      <div class="kpi-sub">leads que agendaram</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Conv. visita → proposta</div>
+      <div class="kpi-value blue" id="kpi-cp">0%</div>
+      <div class="kpi-sub">visitas com proposta</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Conv. proposta → venda</div>
+      <div class="kpi-value green" id="kpi-cps">0%</div>
+      <div class="kpi-sub">propostas fechadas</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Taxa geral lead → venda</div>
+      <div class="kpi-value green" id="kpi-cg">0%</div>
+      <div class="kpi-sub">conversão total</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">CPL — custo por lead</div>
+      <div class="kpi-value" id="kpi-cpl">R$ —</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Custo por venda</div>
+      <div class="kpi-value" id="kpi-cpv">R$ —</div>
+    </div>
+  </div>
+
+  <!-- FUNIL -->
+  <div class="section-label">Funil de conversão</div>
+  <div class="funnel-card">
+    <div class="funnel-row">
+      <span class="funnel-name">Leads</span>
+      <div class="funnel-track"><div class="funnel-fill" id="bar-leads" style="width:100%;background:#378ADD;color:#042C53;"></div></div>
+      <span class="funnel-pct" id="pct-leads">—</span>
+    </div>
+    <div class="funnel-arrow">↓ <span id="arrow-1">—</span></div>
+    <div class="funnel-row">
+      <span class="funnel-name">Visitas</span>
+      <div class="funnel-track"><div class="funnel-fill" id="bar-visitas" style="width:0%;background:#1D9E75;color:#04342C;"></div></div>
+      <span class="funnel-pct" id="pct-visitas">—</span>
+    </div>
+    <div class="funnel-arrow">↓ <span id="arrow-2">—</span></div>
+    <div class="funnel-row">
+      <span class="funnel-name">Propostas</span>
+      <div class="funnel-track"><div class="funnel-fill" id="bar-propostas" style="width:0%;background:#EF9F27;color:#412402;"></div></div>
+      <span class="funnel-pct" id="pct-propostas">—</span>
+    </div>
+    <div class="funnel-arrow">↓ <span id="arrow-3">—</span></div>
+    <div class="funnel-row">
+      <span class="funnel-name">Vendas</span>
+      <div class="funnel-track"><div class="funnel-fill" id="bar-vendas" style="width:0%;background:#085041;color:#E1F5EE;"></div></div>
+      <span class="funnel-pct" id="pct-vendas">—</span>
+    </div>
+  </div>
+
+  <!-- ROI -->
+  <div class="section-label">Resultado financeiro</div>
+  <div class="roi-grid">
+    <div class="roi-card green">
+      <div class="roi-card-label">Receita gerada</div>
+      <div class="roi-card-value" id="roi-receita">R$ 0</div>
+    </div>
+    <div class="roi-card gray">
+      <div class="roi-card-label">Investimento</div>
+      <div class="roi-card-value" id="roi-invest">R$ 0</div>
+    </div>
+    <div class="roi-card green" id="card-lucro">
+      <div class="roi-card-label">Lucro estimado</div>
+      <div class="roi-card-value" id="roi-lucro">R$ 0</div>
+    </div>
+    <div class="roi-card green" id="card-roi">
+      <div class="roi-card-label">ROI</div>
+      <div class="roi-card-value" id="roi-value">—</div>
+    </div>
+  </div>
+
+</main>
+<footer>Dashboard Google Ads · Atualização automática a cada 10s</footer>
+
+<script>
+  // ── Utilidades ──
+  const $ = id => document.getElementById(id);
+  const fmtR = n => 'R$ ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtN = n => Number(n).toLocaleString('pt-BR');
+  const pctStr = (a, b) => b > 0 ? ((a / b) * 100).toFixed(1) + '%' : '0%';
+  const pctNum = (a, b) => b > 0 ? (a / b) * 100 : 0;
+
+  function setBar(id, pctVal, count) {
+    const el = $(id);
+    const w = Math.min(Math.max(pctVal, 0), 100);
+    el.style.width = w + '%';
+    el.textContent = count > 0 ? fmtN(count) : '';
+  }
+
+  // ── Cálculos ──
+  function calc() {
+    const leads     = Math.max(0, parseFloat($('inp-leads').value)    || 0);
+    const visitas   = Math.max(0, parseFloat($('inp-visitas').value)  || 0);
+    const propostas = Math.max(0, parseFloat($('inp-propostas').value)|| 0);
+    const vendas    = Math.max(0, parseFloat($('inp-vendas').value)   || 0);
+    const custo     = Math.max(0, parseFloat($('inp-custo').value)    || 0);
+    const ticket    = Math.max(0, parseFloat($('inp-ticket').value)   || 0);
+
+    $('kpi-cv').textContent  = pctStr(visitas, leads);
+    $('kpi-cp').textContent  = pctStr(propostas, visitas);
+    $('kpi-cps').textContent = pctStr(vendas, propostas);
+    $('kpi-cg').textContent  = pctStr(vendas, leads);
+    $('kpi-cpl').textContent = custo > 0 && leads > 0    ? fmtR(custo / leads)  : 'R$ —';
+    $('kpi-cpv').textContent = custo > 0 && vendas > 0   ? fmtR(custo / vendas) : 'R$ —';
+
+    const ref = leads || 1;
+    setBar('bar-leads',     100,              leads);
+    setBar('bar-visitas',   pctNum(visitas,   ref), visitas);
+    setBar('bar-propostas', pctNum(propostas, ref), propostas);
+    setBar('bar-vendas',    pctNum(vendas,    ref), vendas);
+
+    $('pct-leads').textContent     = leads     + ' leads';
+    $('pct-visitas').textContent   = pctStr(visitas, leads);
+    $('pct-propostas').textContent = pctStr(propostas, leads);
+    $('pct-vendas').textContent    = pctStr(vendas, leads);
+
+    $('arrow-1').textContent = visitas > 0 && leads > 0       ? (pctNum(visitas,   leads).toFixed(0)   + '% avançaram') : '—';
+    $('arrow-2').textContent = propostas > 0 && visitas > 0   ? (pctNum(propostas, visitas).toFixed(0) + '% avançaram') : '—';
+    $('arrow-3').textContent = vendas > 0 && propostas > 0    ? (pctNum(vendas,    propostas).toFixed(0) + '% fecharam') : '—';
+
+    const receita = vendas * ticket;
+    const lucro   = receita - custo;
+    const roi     = custo > 0 ? ((receita - custo) / custo * 100) : null;
+
+    $('roi-receita').textContent = fmtR(receita);
+    $('roi-invest').textContent  = fmtR(custo);
+    $('roi-lucro').textContent   = fmtR(lucro);
+    $('card-lucro').className    = 'roi-card ' + (lucro >= 0 ? 'green' : 'red');
+    $('roi-value').textContent   = roi !== null ? roi.toFixed(0) + '%' : '—';
+    $('card-roi').className      = 'roi-card ' + (roi === null ? 'gray' : roi >= 0 ? 'green' : 'red');
+  }
+
+  // ── Salvar ──
+  async function salvar() {
+    $('save-status').textContent = 'Salvando…';
+    $('save-status').className   = 'save-status saving';
+    const body = {
+      leads:     parseFloat($('inp-leads').value)    || 0,
+      visitas:   parseFloat($('inp-visitas').value)  || 0,
+      propostas: parseFloat($('inp-propostas').value)|| 0,
+      vendas:    parseFloat($('inp-vendas').value)   || 0,
+      custo:     parseFloat($('inp-custo').value)    || 0,
+      ticket:    parseFloat($('inp-ticket').value)   || 0,
+    };
+    try {
+      const res = await fetch('/api/dados', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const data = await res.json();
+      showUpdate(data.data.updatedAt);
+      $('save-status').textContent = '✓ Dados salvos com sucesso!';
+      $('save-status').className   = 'save-status ok';
+      setTimeout(() => { $('save-status').textContent = ''; $('save-status').className = 'save-status'; }, 3000);
+    } catch (e) {
+      $('save-status').textContent = 'Erro ao salvar. Tente novamente.';
+      $('save-status').className   = 'save-status';
+    }
+  }
+
+  // ── Carregar ──
+  function showUpdate(iso) {
+    if (!iso) { $('last-update').textContent = ''; return; }
+    const d = new Date(iso);
+    $('last-update').textContent = 'Atualizado ' + d.toLocaleString('pt-BR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+
+  function preencher(d) {
+    $('inp-leads').value     = d.leads     || '';
+    $('inp-visitas').value   = d.visitas   || '';
+    $('inp-propostas').value = d.propostas || '';
+    $('inp-vendas').value    = d.vendas    || '';
+    $('inp-custo').value     = d.custo     || '';
+    $('inp-ticket').value    = d.ticket    || '';
+    showUpdate(d.updatedAt);
+    calc();
+  }
+
+  async function carregar() {
+    try {
+      const res  = await fetch('/api/dados');
+      const data = await res.json();
+      preencher(data);
+    } catch (e) { /* silencia */ }
+  }
+
+  // ── Init ──
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const now = new Date();
+  $('month-label').textContent = 'Lançamento Imobiliário · ' + meses[now.getMonth()] + ' ' + now.getFullYear();
+
+  carregar();
+  setInterval(carregar, 10000); // Atualiza a cada 10 segundos
+  calc();
+</script>
+</body>
+</html>
