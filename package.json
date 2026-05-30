@@ -1,0 +1,15 @@
+{
+  "name": "google-ads-dashboard",
+  "version": "1.0.0",
+  "description": "Dashboard de campanha Google Ads em tempo real",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
